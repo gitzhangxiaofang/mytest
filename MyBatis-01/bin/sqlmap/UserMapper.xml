@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  加一个命名空间    命名空间要绑定接口的作用 -->
+<!-- <mapper  namespace="test"> -->
+<mapper  namespace="cn.itcast.mapper.UserMapper"> 
+
+<!-- 根据id查询一个用户    有分布式缓存  不需要二级缓存
+     id   :statement的id   select标签
+     parameterMap  已经废弃
+     parameterType : 入参类型 java.lang.Integer  mybatis取的名字 Integer  
+     resultMap:  返回值类型  手动因映射    表pojo属性名不i同时   手动映射
+     resultType:返回值类型  自动映射   pojo与表的 属性名一样时  就是自动映射
+     #{}   ：表示占位符   如果入参的数据类型为基本类型时内容随意写    #{随意些} 不写不行
+                                                         如果入参的数据类型为pojo类型时内容  直接写pojo的属性名  #{pojo的属性名}
+      
+-->
+<select id="findUserById" parameterType="Integer"  resultType="cn.itcast.pojo.User">
+     select * from user where id=#{a}
+
+</select>
+
+<!-- 模糊查询 
+#{}  :占位符   如果入参的数据类型为基本类型时内容随意写    #{随意些} 不写不行
+                                果入参的数据类型为pojo类型时内容  直接写pojo的属性名  #{pojo的属性名}
+            防止sql注入    
+      
+${}  :字符串拼接 如果入参的数据类型为基本类型时内容随意写    #{value} 不写不行
+                    如  果入参的数据类型为pojo类型时内容  直接写pojo的属性名  #{pojo的属性名}
+      不防止sql注入   自己入参的时候 可以拼接  页面传入的值 会注入
+
+
+
+-->
+
+<!-- <select id="findUserByUsername" parameterType="String"  resultType="cn.itcast.pojo.User">
+     select * from user where username like '%${value}%'
+
+</select> -->
+<!--  优化以后 -->
+<select id="findUserByUsername" parameterType="String"  resultType="cn.itcast.pojo.User">
+     select * from user where username like "%"#{a}"%"
+
+</select>
+
+
+<!-- 添加用户    mybatis自带   useGeneratedKey是否生成主键-->
+<insert id="addUser"  parameterType="cn.itcast.pojo.User"  useGeneratedKeys="true"  keyProperty="id">
+<!-- 返回主键    最后添加主键    keyProperty饭回来的id存放在哪里    order排序 mysql数据库 自增长  -->
+<!-- <selectKey  keyProperty="id"  resultType="Integer"  order="AFTER">
+    select LAST_INSERT_ID()
+</selectKey> -->
+
+    insert into user 
+               (username,birthday,sex,address)  
+     values
+               (#{username},#{birthday},#{sex},#{address})  
+
+
+</insert>
+
+
+<!--  更新用户  updateById -->
+
+<update id="updateById"  parameterType="cn.itcast.pojo.User">
+
+update user
+
+      set 
+      
+        username=#{username},
+        birthday=#{birthday},
+        sex=#{sex},
+        address=#{address}
+        
+      where 
+         id=#{id}
+
+</update>
+<!-- 删除id  deleteUserById -->
+
+<delete id="deleteUserById"   parameterType="Integer">
+      delete from user where  id=#{id}
+</delete>
+
+
+
+
+
+
+
+ 
+</mapper>
